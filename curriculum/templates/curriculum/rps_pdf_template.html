@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>RPS {{ mk.nama }}</title>
+    <style>
+        /* Konfigurasi Ukuran Kertas A4 */
+        @page {
+            size: a4 portrait;
+            margin: 2cm;
+        }
+        body { font-family: Helvetica, Arial, sans-serif; font-size: 11pt; color: #333; }
+        .text-center { text-align: center; }
+        .title { font-size: 14pt; font-weight: bold; margin-bottom: 5px; }
+        .subtitle { font-size: 12pt; font-weight: bold; margin-bottom: 20px; }
+        
+        /* Desain Tabel */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid black; padding: 6px; vertical-align: top; }
+        th { background-color: #f2f2f2; font-weight: bold; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="text-center">
+        <div class="title">UNIVERSITAS TADULAKO</div>
+        <div class="subtitle">RENCANA PEMBELAJARAN SEMESTER (RPS)</div>
+    </div>
+
+    <table>
+        <tr>
+            <th width="25%">Mata Kuliah</th>
+            <th width="15%">Kode</th>
+            <th width="10%">Bobot (sks)</th>
+            <th width="15%">Semester</th>
+        </tr>
+        <tr>
+            <td class="text-center">{{ mk.nama }}</td>
+            <td class="text-center">{{ mk.kode }}</td>
+            <td class="text-center">{{ mk.sks }}</td>
+            <td class="text-center">{{ mk.semester }}</td>
+        </tr>
+    </table>
+
+    <table>
+        <tr>
+            <th colspan="2">Capaian Pembelajaran (CPL & CPMK)</th>
+        </tr>
+        <tr>
+            <td width="20%"><strong>CPL Prodi</strong></td>
+            <td>
+                <ul>
+                    {% for cpl in cpl_list %}
+                        <li><strong>{{ cpl.kode }}</strong>: {{ cpl.deskripsi }}</li>
+                    {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        <tr>
+            <td><strong>CPMK Mata Kuliah</strong></td>
+            <td>
+                <ul>
+                    {% for cpmk in cpmk_list %}
+                        <li><strong>{{ cpmk.kode }}</strong>: {{ cpmk.deskripsi }}</li>
+                    {% endfor %}
+                </ul>
+            </td>
+        </tr>
+    </table>
+
+    <table>
+        <tr>
+            <th width="15%">Sub-CPMK</th>
+            <th width="45%">Indikator Penilaian</th>
+            <th width="20%">Bentuk Penilaian</th>
+            <th width="10%">Bobot (%)</th>
+        </tr>
+        {% for cpmk in cpmk_list %}
+            {% for sub in cpmk.sub_cpmk.all %}
+            <tr>
+                <td class="text-center">{{ sub.kode }}</td>
+                <td>{{ sub.deskripsi }}</td>
+                <td class="text-center">{{ sub.bentuk_penilaian|default:"-" }}</td>
+                <td class="text-center">{{ sub.bobot_persentase }}%</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">Belum ada rincian Sub-CPMK.</td>
+            </tr>
+            {% endfor %}
+        {% endfor %}
+    </table>
+
+</body>
+</html>

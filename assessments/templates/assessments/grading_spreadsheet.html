@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Grading - {{ kelas.mata_kuliah.nama }}</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        .header-box { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        h1 { margin: 0 0 10px 0; color: #333; font-size: 24px; }
+        .btn-save { background: #007bff; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; float: right; }
+        .btn-save:hover { background: #0056b3; }
+        .alert-success { background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        
+        /* Gaya Tabel ala Spreadsheet */
+        .table-container { overflow-x: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        table { border-collapse: collapse; width: 100%; white-space: nowrap; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background-color: #f8f9fa; color: #333; font-weight: 600; position: sticky; top: 0; }
+        td.text-left { text-align: left; }
+        
+        /* Kolom NIM dan Nama dibuat sticky (tidak ikut tergeser saat scroll ke kanan) */
+        th:nth-child(1), td:nth-child(1) { position: sticky; left: 0; background: #f8f9fa; z-index: 1; }
+        th:nth-child(2), td:nth-child(2) { position: sticky; left: 100px; background: #f8f9fa; z-index: 1; }
+        
+        input[type="number"] { width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; text-align: center; }
+        input[type="number"]:focus { border-color: #007bff; outline: none; box-shadow: 0 0 3px rgba(0,123,255,0.5); }
+    </style>
+</head>
+<body>
+
+    <div class="header-box">
+        <button type="submit" form="gradingForm" class="btn-save">💾 Simpan Nilai</button>
+        <h1>Matriks Penilaian CPL</h1>
+        <p><strong>Mata Kuliah:</strong> {{ kelas.mata_kuliah.nama }} | <strong>Kelas:</strong> {{ kelas.nama_kelas }} | <strong>Semester:</strong> {{ kelas.tahun_akademik }}</p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert-success">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="table-container">
+        <form id="gradingForm" method="POST">
+            {% csrf_token %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>NIM</th>
+                        <th>Nama Mahasiswa</th>
+                        {% for sub in sub_cpmk_list %}
+                            <th title="{{ sub.deskripsi }}">
+                                {{ sub.cpmk.kode }}<br>
+                                <span style="font-size: 12px; color: #666;">{{ sub.kode }} ({{ sub.bobot_persentase }}%)</span>
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in peserta_kelas %}
+                        <tr>
+                            <td>{{ p.mahasiswa.nim }}</td>
+                            <td class="text-left">{{ p.mahasiswa.nama }}</td>
+                            
+                            {% for sub in sub_cpmk_list %}
+                                <td>
+                                    <input type="number" step="0.01" min="0" max="100" 
+                                           name="nilai_{{ p.id }}_{{ sub.id }}" 
+                                           value="{% for n_pid, n_data in nilai_dict.items %}{% if n_pid == p.id %}{% for n_sid, n_val in n_data.items %}{% if n_sid == sub.id %}{{ n_val|stringformat:'s' }}{% endif %}{% endfor %}{% endif %}{% endfor %}">
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="100%">Belum ada mahasiswa yang terdaftar di kelas ini.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+    </div>
+
+</body>
+</html>

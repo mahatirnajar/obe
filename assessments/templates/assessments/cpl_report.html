@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Laporan Ketercapaian CPL - {{ kelas.mata_kuliah.nama }}</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        .header-box { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        h1 { margin: 0 0 10px 0; color: #333; font-size: 24px; }
+        
+        .table-container { overflow-x: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 20px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        th { background-color: #007bff; color: white; font-weight: 600; }
+        td.text-left { text-align: left; }
+        
+        /* Pewarnaan Indikator Nilai */
+        .grade-excellent { background-color: #d4edda; color: #155724; font-weight: bold; } /* Hijau (>= 80%) */
+        .grade-good { background-color: #fff3cd; color: #856404; font-weight: bold; }      /* Kuning (60% - 79%) */
+        .grade-poor { background-color: #f8d7da; color: #721c24; font-weight: bold; }      /* Merah (< 60%) */
+        
+        .nav-links { margin-bottom: 15px; }
+        .nav-links a { text-decoration: none; background: #6c757d; color: white; padding: 8px 15px; border-radius: 4px; font-size: 14px; }
+        .nav-links a:hover { background: #5a6268; }
+    </style>
+</head>
+<body>
+
+    <div class="header-box">
+        <h1>Laporan Evaluasi Ketercapaian CPL (OBE)</h1>
+        <p><strong>Mata Kuliah:</strong> {{ kelas.mata_kuliah.nama }} | <strong>Kelas:</strong> {{ kelas.nama_kelas }} | <strong>Semester:</strong> {{ kelas.tahun_akademik }}</p>
+        
+        <div class="nav-links">
+            <a href="{% url 'assessments:grading_spreadsheet' kelas.id %}">⬅ Kembali ke Matriks Penilaian</a>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>NIM</th>
+                    <th>Nama Mahasiswa</th>
+                    {% for cpl in cpl_list %}
+                        <th title="{{ cpl.deskripsi }}">
+                            {{ cpl.kode }}<br>
+                            <span style="font-size: 12px; font-weight: normal; color: #e2e2e2;">(Max Bobot: {{ cpl_max_weights|dictsort:"0"|default:"" }}{% for key, value in cpl_max_weights.items %}{% if key == cpl.id %}{{ value }}%{% endif %}{% endfor %})</span>
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in peserta_kelas %}
+                    <tr>
+                        <td>{{ p.mahasiswa.nim }}</td>
+                        <td class="text-left">{{ p.mahasiswa.nama }}</td>
+                        
+                        {% for cpl in cpl_list %}
+                            {% for pid, cpl_data in student_cpl_scores.items %}
+                                {% if pid == p.id %}
+                                    {% for cid, score in cpl_data.items %}
+                                        {% if cid == cpl.id %}
+                                            <td class="
+                                                {% if score >= 80 %}grade-excellent
+                                                {% elif score >= 60 %}grade-good
+                                                {% else %}grade-poor
+                                                {% endif %}
+                                            ">
+                                                {{ score }}%
+                                            </td>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="100%">Belum ada data mahasiswa.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <p style="margin-top: 20px; font-size: 14px; color: #555;">
+            <strong>Keterangan:</strong><br>
+            <span style="display:inline-block; width:15px; height:15px; background:#d4edda; border:1px solid #ccc;"></span> Ketercapaian Sangat Baik (&ge; 80%)<br>
+            <span style="display:inline-block; width:15px; height:15px; background:#fff3cd; border:1px solid #ccc;"></span> Ketercapaian Cukup (60% - 79%)<br>
+            <span style="display:inline-block; width:15px; height:15px; background:#f8d7da; border:1px solid #ccc;"></span> Ketercapaian Kurang (&lt; 60%) - <em>Perlu intervensi/perbaikan metode pembelajaran</em>
+        </p>
+    </div>
+
+</body>
+</html>
