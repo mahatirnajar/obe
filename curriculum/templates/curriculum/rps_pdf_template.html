@@ -2,94 +2,169 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>RPS {{ mk.nama }}</title>
+    <title>RPS - {{ mk.nama }}</title>
     <style>
-        /* Konfigurasi Ukuran Kertas A4 */
         @page {
             size: a4 portrait;
-            margin: 2cm;
+            margin: 1.5cm;
         }
-        body { font-family: Helvetica, Arial, sans-serif; font-size: 11pt; color: #333; }
+        body { 
+            font-family: Helvetica, Arial, sans-serif; 
+            font-size: 10pt; 
+            color: #000; 
+        }
         .text-center { text-align: center; }
-        .title { font-size: 14pt; font-weight: bold; margin-bottom: 5px; }
-        .subtitle { font-size: 12pt; font-weight: bold; margin-bottom: 20px; }
+        .text-bold { font-weight: bold; }
+        .bg-gray { background-color: #e9ecef; }
+        .bg-dark-gray { background-color: #d6d8db; }
         
-        /* Desain Tabel */
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { border: 1px solid black; padding: 6px; vertical-align: top; }
-        th { background-color: #f2f2f2; font-weight: bold; text-align: center; }
+        /* Pengaturan Tabel */
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-bottom: 20px; 
+        }
+        th, td { 
+            border: 1px solid black; 
+            padding: 6px; 
+            vertical-align: top; 
+        }
+        
+        .list-item { margin-bottom: 5px; }
+        .kop-surat { font-size: 12pt; margin-bottom: 20px; }
+        .section-title { font-size: 11pt; font-weight: bold; margin-bottom: 5px; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-    <div class="text-center">
-        <div class="title">UNIVERSITAS TADULAKO</div>
-        <div class="subtitle">RENCANA PEMBELAJARAN SEMESTER (RPS)</div>
+    <div class="text-center kop-surat text-bold">
+        UNIVERSITAS TADULAKO<br>
+        FAKULTAS MATEMATIKA DAN ILMU PENGETAHUAN ALAM<br>
+        PROGRAM STUDI S1 SAINS DATA<br>
     </div>
 
     <table>
         <tr>
-            <th width="25%">Mata Kuliah</th>
-            <th width="15%">Kode</th>
-            <th width="10%">Bobot (sks)</th>
-            <th width="15%">Semester</th>
+            <td colspan="6" class="text-center text-bold bg-dark-gray" style="font-size: 12pt;">
+                RENCANA PEMBELAJARAN SEMESTER (RPS)
+            </td>
+        </tr>
+        <tr class="text-bold bg-gray">
+            <td width="25%">Mata Kuliah (MK)</td>
+            <td width="15%">Kode MK</td>
+            <td width="20%">Rumpun MK</td>
+            <td width="10%">Bobot (SKS)</td>
+            <td width="15%">Semester</td>
+            <td width="15%">Tgl Penyusunan</td>
         </tr>
         <tr>
-            <td class="text-center">{{ mk.nama }}</td>
+            <td>{{ mk.nama }}</td>
             <td class="text-center">{{ mk.kode }}</td>
+            <td class="text-center">-</td>
             <td class="text-center">{{ mk.sks }}</td>
             <td class="text-center">{{ mk.semester }}</td>
+            <td class="text-center">{% if mk.rps %}{{ mk.rps.tanggal_penyusunan|date:"d M Y" }}{% else %}-{% endif %}</td>
+        </tr>
+        <tr>
+            <td colspan="2" class="text-bold bg-gray">Otorisasi / Pengesahan</td>
+            <td colspan="2" class="text-center">Dosen Pengembang RPS<br><br><br><br>(........................................)</td>
+            <td colspan="2" class="text-center">Koordinator Program Studi<br><br><br><br>(........................................)</td>
         </tr>
     </table>
 
+    <div class="section-title">1. Capaian Pembelajaran Lulusan (CPL) dan Mata Kuliah (CPMK)</div>
     <table>
         <tr>
-            <th colspan="2">Capaian Pembelajaran (CPL & CPMK)</th>
-        </tr>
-        <tr>
-            <td width="20%"><strong>CPL Prodi</strong></td>
-            <td>
-                <ul>
-                    {% for cpl in cpl_list %}
-                        <li><strong>{{ cpl.kode }}</strong>: {{ cpl.deskripsi }}</li>
-                    {% endfor %}
-                </ul>
+            <td width="20%" class="text-bold bg-gray">CPL Prodi</td>
+            <td width="80%">
+                {% for cpl in cpl_list %}
+                    <div class="list-item"><b>{{ cpl.kode }}</b>: {{ cpl.deskripsi }}</div>
+                {% empty %}
+                    Belum ada CPL.
+                {% endfor %}
             </td>
         </tr>
         <tr>
-            <td><strong>CPMK Mata Kuliah</strong></td>
+            <td class="text-bold bg-gray">CPMK</td>
             <td>
-                <ul>
-                    {% for cpmk in cpmk_list %}
-                        <li><strong>{{ cpmk.kode }}</strong>: {{ cpmk.deskripsi }}</li>
-                    {% endfor %}
-                </ul>
+                {% for cpmk in cpmk_list %}
+                    <div class="list-item"><b>{{ cpmk.kode }}</b>: {{ cpmk.deskripsi }}</div>
+                {% empty %}
+                    Belum ada CPMK.
+                {% endfor %}
             </td>
+        </tr>
+        <tr>
+            <td class="text-bold bg-gray">Deskripsi MK</td>
+            <td>{% if mk.rps %}{{ mk.rps.deskripsi }}{% else %}Belum ada deskripsi.{% endif %}</td>
         </tr>
     </table>
 
+    <div class="section-title">2. Matriks Korelasi CPL dan CPMK</div>
     <table>
-        <tr>
-            <th width="15%">Sub-CPMK</th>
-            <th width="45%">Indikator Penilaian</th>
-            <th width="20%">Bentuk Penilaian</th>
-            <th width="10%">Bobot (%)</th>
+        <tr class="bg-gray text-center text-bold">
+            <td width="20%">CPMK \ CPL</td>
+            {% for cpl in cpl_list %}
+                <td>{{ cpl.kode }}</td>
+            {% endfor %}
         </tr>
+        {% for cpmk in cpmk_list %}
+        <tr>
+            <td class="text-center text-bold bg-gray">{{ cpmk.kode }}</td>
+            {% for cpl in cpl_list %}
+                <td class="text-center">
+                    {% for cpmk_cpl in cpmk.cpl.all %}
+                        {% if cpmk_cpl.id == cpl.id %} v {% endif %}
+                    {% endfor %}
+                </td>
+            {% endfor %}
+        </tr>
+        {% empty %}
+        <tr><td colspan="100%" class="text-center">Belum ada data.</td></tr>
+        {% endfor %}
+    </table>
+
+    <div style="page-break-before: always;"></div>
+    <div class="section-title">3. Peta Capaian Pembelajaran dan Rencana Evaluasi</div>
+    <table>
+        <tr class="bg-dark-gray text-center text-bold">
+            <td width="10%">Korelasi CPL</td>
+            <td width="10%">CPMK</td>
+            <td width="15%">Sub-CPMK</td>
+            <td width="35%">Indikator Penilaian</td>
+            <td width="20%">Bentuk Penilaian</td>
+            <td width="10%">Bobot (%)</td>
+        </tr>
+        
         {% for cpmk in cpmk_list %}
             {% for sub in cpmk.sub_cpmk.all %}
             <tr>
-                <td class="text-center">{{ sub.kode }}</td>
+                <td class="text-center">
+                    {% for cpl in cpmk.cpl.all %}
+                        {{ cpl.kode }}<br>
+                    {% endfor %}
+                </td>
+                <td class="text-center text-bold">{{ cpmk.kode }}</td>
+                <td class="text-center text-bold">{{ sub.kode }}</td>
                 <td>{{ sub.deskripsi }}</td>
                 <td class="text-center">{{ sub.bentuk_penilaian|default:"-" }}</td>
                 <td class="text-center">{{ sub.bobot_persentase }}%</td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="4" class="text-center">Belum ada rincian Sub-CPMK.</td>
+                <td class="text-center">
+                    {% for cpl in cpmk.cpl.all %}{{ cpl.kode }}<br>{% endfor %}
+                </td>
+                <td class="text-center text-bold">{{ cpmk.kode }}</td>
+                <td colspan="4" class="text-center">Rincian Sub-CPMK belum ditambahkan.</td>
             </tr>
             {% endfor %}
         {% endfor %}
     </table>
+
+    <div style="margin-top: 20px; font-size: 9pt; color: #555;">
+        * Dokumen ini dicetak secara otomatis dari Sistem Informasi Akademik Berbasis OBE.
+    </div>
 
 </body>
 </html>
