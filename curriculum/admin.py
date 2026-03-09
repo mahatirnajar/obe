@@ -49,7 +49,7 @@ class RPSAdmin(admin.ModelAdmin):
 @admin.register(MataKuliah)
 class MataKuliahAdmin(NestedModelAdmin):
     list_display = ('kode', 'nama', 'sks', 'semester', 'tombol_download_rps')
-    # list_filter = ('semester', 'sks')
+    list_filter = ('semester', 'sks')
     search_fields = ('kode', 'nama')
     ordering = ('semester', 'kode')
     

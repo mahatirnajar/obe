@@ -1,6 +1,10 @@
-from django.shortcuts import render, get_object_or_404, redirect
+import os
+import pandas as pd
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .models import Kelas, PesertaKelas, NilaiSubCPMK
+from .models import Kelas, PesertaKelas, NilaiSubCPMK, Mahasiswa, PesertaKelas
 from curriculum.models import SubCPMK
 
 def grading_spreadsheet(request, kelas_id):
@@ -102,3 +106,70 @@ def cpl_report(request, kelas_id):
     }
     
     return render(request, 'assessments/cpl_report.html', context)
+
+def upload_peserta_excel(request, kelas_id):
+    kelas = get_object_or_404(Kelas, id=kelas_id)
+    
+    if request.method == 'POST':
+        excel_file = request.FILES.get('file_excel')
+        
+        if not excel_file:
+            messages.error(request, 'Silakan pilih file Excel terlebih dahulu.')
+        elif not excel_file.name.endswith(('.xls', '.xlsx')):
+            messages.error(request, 'Format file tidak valid. Gunakan format .xls atau .xlsx.')
+        else:
+            # 1. Simpan file secara eksplisit ke folder media sementara
+            fs = FileSystemStorage()
+            filename = fs.save(excel_file.name, excel_file)
+            file_path = fs.path(filename)
+            
+            try:
+                # 2. Baca file dari path yang tersimpan
+                df = pd.read_excel(file_path)
+                
+                required_columns = ['NIM', 'Nama', 'Angkatan']
+                if not all(col in df.columns for col in required_columns):
+                    messages.error(request, 'Kolom Excel tidak sesuai! Pastikan ada kolom: NIM, Nama, Angkatan')
+                    return redirect('assessments:upload_peserta', kelas_id=kelas.id)
+                
+                mahasiswa_terdaftar = 0
+                
+                for index, row in df.iterrows():
+                    nim = str(row['NIM']).strip()
+                    nama = str(row['Nama']).strip()
+                    angkatan = int(row['Angkatan']) if pd.notna(row['Angkatan']) else 2024
+                    
+                    if nim and nim != 'nan':
+                        mhs, created = Mahasiswa.objects.get_or_create(
+                            nim=nim,
+                            defaults={'nama': nama, 'angkatan': angkatan}
+                        )
+                        if not created:
+                            mhs.nama = nama
+                            mhs.save()
+                            
+                        peserta, p_created = PesertaKelas.objects.get_or_create(
+                            kelas=kelas, 
+                            mahasiswa=mhs
+                        )
+                        if p_created:
+                            mahasiswa_terdaftar += 1
+                            
+                messages.success(request, f'Berhasil mengimpor {mahasiswa_terdaftar} mahasiswa baru ke kelas {kelas.nama_kelas}.')
+                return redirect('admin:assessments_kelas_change', kelas.id)
+                
+            except Exception as e:
+                # Jika terjadi error (misal format file rusak), tampilkan pesan
+                messages.error(request, f'Terjadi kesalahan saat memproses file: {e}')
+                return redirect('assessments:upload_peserta', kelas_id=kelas.id)
+                
+            finally:
+                # 3. BLOK FINALLY: Ini pasti akan dieksekusi apapun yang terjadi
+                # Hapus file Excel dari server agar tidak memenuhi hardisk
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                
+    context = {
+        'kelas': kelas
+    }
+    return render(request, 'assessments/upload_peserta.html', context)
