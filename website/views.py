@@ -33,7 +33,6 @@ def index(request):
     }
     return render(request, 'website/index.html', context)
 
-
 # ─────────────────────────────────────────
 # PROFIL PRODI
 # ─────────────────────────────────────────

@@ -17,7 +17,7 @@ class BeritaAdmin(admin.ModelAdmin):
 
 @admin.register(Dosen)
 class DosenAdmin(admin.ModelAdmin):
-    list_display = ('nama', 'jabatan', 'pendidikan_terakhir', 'bidang_keahlian', 'aktif')
+    list_display  = ('nama', 'jabatan', 'pendidikan_terakhir', 'bidang_keahlian', 'urutan', 'aktif')
     list_filter = ('jabatan', 'pendidikan_terakhir', 'aktif')
     list_editable = ('aktif', 'urutan')
     search_fields = ('nama', 'bidang_keahlian', 'nidn')
