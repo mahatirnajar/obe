@@ -1,0 +1,48 @@
+{% extends 'website/base.html' %}
+{% block title %}Struktur Organisasi{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="inner">
+    <div class="breadcrumb"><a href="{% url 'website:index' %}">Beranda</a> › Struktur Organisasi</div>
+    <h1 class="page-title">Struktur Organisasi</h1>
+  </div>
+</div>
+<section style="padding:64px 0;">
+  <div class="inner" style="text-align:center;">
+    <div class="section-badge">Organisasi</div>
+    <div class="divider" style="margin:12px auto 32px;"></div>
+    <h2 class="section-title">Struktur Program Studi Sains Data</h2>
+    <p class="section-sub" style="margin:0 auto 40px;">FMIPA Universitas Tadulako</p>
+
+    {% if koordinator %}
+    <div style="display:inline-block;margin-bottom:32px;">
+      <div class="coordinator-card" style="min-width:260px;">
+        {% if koordinator.foto %}
+          <img src="{{ koordinator.foto.url }}" alt="{{ koordinator.nama }}" class="coord-foto">
+        {% else %}
+          <div class="coord-avatar">👩‍💼</div>
+        {% endif %}
+        <div class="coord-name">{{ koordinator.nama }}</div>
+        <div class="coord-role">Koordinator Program Studi</div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="dosen-grid" style="margin-top:16px;">
+      {% for d in dosen_list %}
+      {% if d.jabatan != 'koordinator' %}
+      <div class="dosen-card">
+        {% if d.foto %}<img src="{{ d.foto.url }}" alt="{{ d.nama }}" class="dosen-foto">
+        {% else %}<div class="dosen-avatar">👨‍🏫</div>{% endif %}
+        <div class="dosen-body">
+          <div class="dosen-name">{{ d.nama }}</div>
+          <div class="dosen-bidang">{{ d.bidang_keahlian }}</div>
+          <span class="dosen-badge">Dosen</span>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

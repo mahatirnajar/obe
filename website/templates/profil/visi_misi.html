@@ -1,0 +1,42 @@
+{% extends 'website/base.html' %}
+{% block title %}Visi Misi &amp; Tujuan{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="inner">
+    <div class="breadcrumb"><a href="{% url 'website:index' %}">Beranda</a> › Visi Misi</div>
+    <h1 class="page-title">Visi, Misi &amp; Tujuan</h1>
+  </div>
+</div>
+
+<section class="visimisi-section" style="padding:72px 0;">
+  <div class="inner">
+    {% if profil %}
+    <div class="visimisi-grid">
+      <div class="vm-box">
+        <div class="vm-label">Visi</div>
+        <h3 class="vm-title">Visi Program Studi</h3>
+        <p class="vm-text">{{ profil.visi }}</p>
+      </div>
+      <div class="vm-box">
+        <div class="vm-label">Misi</div>
+        <h3 class="vm-title">Misi Program Studi</h3>
+        <ul class="misi-list">
+          {% for m in profil.get_misi_list %}
+          <li><span class="misi-num">{{ forloop.counter }}</span><span>{{ m }}</span></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    {% if profil.tujuan %}
+    <div style="margin-top:48px;background:rgba(255,255,255,.1);border-radius:14px;padding:32px;">
+      <div class="vm-label">Tujuan</div>
+      <h3 class="vm-title">Tujuan Program Studi</h3>
+      <p class="vm-text">{{ profil.tujuan|linebreaks }}</p>
+    </div>
+    {% endif %}
+    {% else %}
+    <p style="color:rgba(255,255,255,.8);text-align:center;">Konten belum tersedia. Silakan tambahkan melalui halaman Admin.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

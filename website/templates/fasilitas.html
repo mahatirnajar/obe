@@ -1,0 +1,73 @@
+{% extends 'website/base.html' %}
+{% block title %}Fasilitas{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="inner">
+    <div class="breadcrumb"><a href="{% url 'website:index' %}">Beranda</a> › Fasilitas</div>
+    <h1 class="page-title">Fasilitas Program Studi</h1>
+  </div>
+</div>
+<section style="padding:56px 0;">
+  <div class="inner">
+
+    {% if laboratorium %}
+    <div class="section-badge">Laboratorium</div>
+    <div class="divider"></div>
+    <h2 class="section-title" style="margin-bottom:24px;">Laboratorium</h2>
+    <div class="dosen-grid" style="margin-bottom:48px;">
+      {% for f in laboratorium %}
+      <div class="dosen-card">
+        {% if f.foto %}<img src="{{ f.foto.url }}" alt="{{ f.nama }}" class="dosen-foto">
+        {% else %}<div class="dosen-avatar">🔬</div>{% endif %}
+        <div class="dosen-body">
+          <div class="dosen-name">{{ f.nama }}</div>
+          {% if f.deskripsi %}<p class="dosen-bidang">{{ f.deskripsi|truncatewords:20 }}</p>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if ruang_kuliah %}
+    <div class="section-badge">Ruang Kuliah</div>
+    <div class="divider"></div>
+    <h2 class="section-title" style="margin-bottom:24px;">Ruang Kuliah</h2>
+    <div class="dosen-grid" style="margin-bottom:48px;">
+      {% for f in ruang_kuliah %}
+      <div class="dosen-card">
+        {% if f.foto %}<img src="{{ f.foto.url }}" alt="{{ f.nama }}" class="dosen-foto">
+        {% else %}<div class="dosen-avatar">🏫</div>{% endif %}
+        <div class="dosen-body">
+          <div class="dosen-name">{{ f.nama }}</div>
+          {% if f.deskripsi %}<p class="dosen-bidang">{{ f.deskripsi|truncatewords:20 }}</p>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if ruang_dosen %}
+    <div class="section-badge">Ruang Dosen</div>
+    <div class="divider"></div>
+    <h2 class="section-title" style="margin-bottom:24px;">Ruang Dosen</h2>
+    <div class="dosen-grid">
+      {% for f in ruang_dosen %}
+      <div class="dosen-card">
+        {% if f.foto %}<img src="{{ f.foto.url }}" alt="{{ f.nama }}" class="dosen-foto">
+        {% else %}<div class="dosen-avatar">🏢</div>{% endif %}
+        <div class="dosen-body">
+          <div class="dosen-name">{{ f.nama }}</div>
+          {% if f.deskripsi %}<p class="dosen-bidang">{{ f.deskripsi|truncatewords:20 }}</p>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if not laboratorium and not ruang_kuliah and not ruang_dosen %}
+    <p class="empty-state">Belum ada data fasilitas.</p>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

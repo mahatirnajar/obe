@@ -1,0 +1,75 @@
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block title %}Berita &amp; Pengumuman{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="inner">
+    <div class="breadcrumb">
+      <a href="{% url 'website:index' %}">Beranda</a> › Berita
+    </div>
+    <h1 class="page-title">Berita &amp; Pengumuman</h1>
+  </div>
+</div>
+
+<section style="padding: 48px 0;">
+  <div class="inner">
+
+    <!-- Filter kategori -->
+    <div class="filter-bar">
+      <a href="{% url 'website:berita_list' %}"
+         class="filter-btn {% if not kategori_aktif %}active{% endif %}">Semua</a>
+      {% for val, label in kategori_choices %}
+      <a href="?kategori={{ val }}"
+         class="filter-btn {% if kategori_aktif == val %}active{% endif %}">{{ label }}</a>
+      {% endfor %}
+    </div>
+
+    <!-- Grid berita -->
+    <div class="berita-grid">
+      {% for b in page_obj %}
+      <a href="{% url 'website:berita_detail' b.slug %}" class="news-card">
+        <div class="news-img">
+          {% if b.gambar %}
+            <img src="{{ b.gambar.url }}" alt="{{ b.judul }}">
+          {% else %}
+            <div class="news-img-placeholder">📰</div>
+          {% endif %}
+        </div>
+        <div class="news-body">
+          <span class="news-cat">{{ b.get_kategori_display }}</span>
+          <div class="news-title">{{ b.judul }}</div>
+          {% if b.ringkasan %}<p class="news-ringkasan">{{ b.ringkasan|truncatewords:20 }}</p>{% endif %}
+          <div class="news-date">📅 {{ b.tanggal_dibuat|date:"d F Y" }}</div>
+        </div>
+      </a>
+      {% empty %}
+      <div class="empty-state">
+        <p>Belum ada berita dalam kategori ini.</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if kategori_aktif %}&kategori={{ kategori_aktif }}{% endif %}" class="page-btn">‹ Sebelumnya</a>
+      {% endif %}
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <span class="page-btn active">{{ num }}</span>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <a href="?page={{ num }}{% if kategori_aktif %}&kategori={{ kategori_aktif }}{% endif %}" class="page-btn">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if kategori_aktif %}&kategori={{ kategori_aktif }}{% endif %}" class="page-btn">Selanjutnya ›</a>
+      {% endif %}
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

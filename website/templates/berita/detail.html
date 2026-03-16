@@ -1,0 +1,59 @@
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block title %}{{ berita.judul }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="inner">
+    <div class="breadcrumb">
+      <a href="{% url 'website:index' %}">Beranda</a> ›
+      <a href="{% url 'website:berita_list' %}">Berita</a> ›
+      {{ berita.judul|truncatewords:6 }}
+    </div>
+  </div>
+</div>
+
+<section style="padding: 48px 0;">
+  <div class="inner">
+    <div class="detail-layout">
+
+      <!-- Konten utama -->
+      <article class="detail-main">
+        <span class="news-cat">{{ berita.get_kategori_display }}</span>
+        <h1 class="detail-title">{{ berita.judul }}</h1>
+        <div class="detail-meta">
+          <span>📅 {{ berita.tanggal_dibuat|date:"d F Y" }}</span>
+        </div>
+        {% if berita.gambar %}
+        <img src="{{ berita.gambar.url }}" alt="{{ berita.judul }}" class="detail-img">
+        {% endif %}
+        <div class="detail-body">
+          {{ berita.isi|linebreaks }}
+        </div>
+      </article>
+
+      <!-- Sidebar berita terkait -->
+      <aside class="detail-sidebar">
+        <h3 class="sidebar-title">Berita Terkait</h3>
+        {% for b in berita_terkait %}
+        <a href="{% url 'website:berita_detail' b.slug %}" class="sidebar-news-item">
+          {% if b.gambar %}
+            <img src="{{ b.gambar.url }}" alt="{{ b.judul }}" class="sidebar-news-img">
+          {% else %}
+            <div class="sidebar-news-img sidebar-news-placeholder">📰</div>
+          {% endif %}
+          <div>
+            <div class="sidebar-news-title">{{ b.judul|truncatewords:10 }}</div>
+            <div class="sidebar-news-date">{{ b.tanggal_dibuat|date:"d M Y" }}</div>
+          </div>
+        </a>
+        {% empty %}
+        <p style="font-size:.82rem;color:var(--text-muted)">Tidak ada berita terkait.</p>
+        {% endfor %}
+      </aside>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

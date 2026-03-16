@@ -1,0 +1,68 @@
+{% extends 'website/base.html' %}
+{% block title %}Alumni{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="inner">
+    <div class="breadcrumb"><a href="{% url 'website:index' %}">Beranda</a> › Alumni</div>
+    <h1 class="page-title">Alumni</h1>
+    <p class="page-sub">Lulusan Program Studi Sains Data FMIPA UNTAD</p>
+  </div>
+</div>
+<section style="padding:56px 0;">
+  <div class="inner">
+
+    <!-- Filter angkatan -->
+    <div class="filter-bar">
+      <a href="{% url 'website:alumni' %}" class="filter-btn {% if not angkatan_aktif %}active{% endif %}">Semua</a>
+      {% for a in angkatan_list %}
+      <a href="?angkatan={{ a }}" class="filter-btn {% if angkatan_aktif == a|stringformat:'s' %}active{% endif %}">
+        Angkatan {{ a }}
+      </a>
+      {% endfor %}
+    </div>
+
+    <div class="dosen-grid">
+      {% for a in page_obj %}
+      <div class="dosen-card">
+        {% if a.foto %}<img src="{{ a.foto.url }}" alt="{{ a.nama }}" class="dosen-foto">
+        {% else %}<div class="dosen-avatar">🎓</div>{% endif %}
+        <div class="dosen-body">
+          <div class="dosen-name">{{ a.nama }}</div>
+          <div class="dosen-bidang">
+            {% if a.pekerjaan %}{{ a.pekerjaan }}{% endif %}
+            {% if a.instansi %} — {{ a.instansi }}{% endif %}
+          </div>
+          <span class="dosen-badge">Angkatan {{ a.angkatan }}</span>
+          {% if a.testimoni %}
+          <p style="font-size:.75rem;color:var(--text-muted);margin-top:8px;font-style:italic;line-height:1.5;">
+            "{{ a.testimoni|truncatewords:20 }}"
+          </p>
+          {% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <p class="empty-state">Belum ada data alumni.</p>
+      {% endfor %}
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if angkatan_aktif %}&angkatan={{ angkatan_aktif }}{% endif %}" class="page-btn">‹</a>
+      {% endif %}
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <span class="page-btn active">{{ num }}</span>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <a href="?page={{ num }}{% if angkatan_aktif %}&angkatan={{ angkatan_aktif }}{% endif %}" class="page-btn">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if angkatan_aktif %}&angkatan={{ angkatan_aktif }}{% endif %}" class="page-btn">›</a>
+      {% endif %}
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

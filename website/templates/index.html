@@ -1,0 +1,206 @@
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block title %}Beranda{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-eyebrow">Program Studi Sains Data FMIPA</div>
+      <h1>UNIVERSITAS<br><span>TADULAKO</span></h1>
+      <p>Menjadi Program Studi Sains Data yang inovatif dan berstandar internasional dalam pengembangan IPTEKS berbasis data, kecerdasan buatan, dan analitik canggih untuk mendorong kemajuan Sulawesi Tengah.</p>
+      <div class="hero-cta">
+        <a href="{% url 'website:visi_misi' %}" class="btn-primary">Selengkapnya</a>
+        <a href="{% url 'website:kontak' %}" class="btn-outline">Hubungi Kami</a>
+      </div>
+    </div>
+    <div class="hero-badge">
+      <div class="badge-icon">🎓</div>
+      <div class="badge-label">Akreditasi</div>
+      <div class="badge-val">{{ profil.akreditasi|default:"Baik" }}</div>
+      <div class="badge-sub">BAN-PT</div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stats-bar-inner">
+    <div class="stat-item">
+      <div class="stat-num">{{ profil.jumlah_mahasiswa|default:"450" }}+</div>
+      <div class="stat-label">Mahasiswa Aktif</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">{{ profil.jumlah_dosen|default:"18" }}</div>
+      <div class="stat-label">Dosen Berkualifikasi</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Laboratorium</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">95%</div>
+      <div class="stat-label">Tingkat Serapan Kerja</div>
+    </div>
+  </div>
+</div>
+
+<!-- WELCOME -->
+<section class="welcome-section">
+  <div class="inner">
+    <div class="welcome-grid">
+      <div class="welcome-text">
+        <div class="section-badge">Selamat Datang di</div>
+        <div class="divider"></div>
+        <h2 class="section-title">Program Studi Sains Data<br>Fakultas Matematika dan Ilmu Pengetahuan Alam<br>Universitas Tadulako</h2>
+        <h3 class="prodi-subtitle">FMIPA UNTAD</h3>
+        {% if profil %}
+          <p>{{ profil.sejarah|truncatewords:80 }}</p>
+        {% else %}
+          <p>Program Studi Sains Data FMIPA UNTAD adalah institusi pendidikan yang bertujuan melatih sarjana sains data yang beriman, handal, dan berprestasi dalam era digital.</p>
+        {% endif %}
+        <a href="{% url 'website:sejarah' %}" class="btn-more">Baca Selengkapnya →</a>
+      </div>
+
+      {% with koordinator=dosen_list|first %}
+      {% if koordinator %}
+      <div class="coordinator-card">
+        {% if koordinator.foto %}
+          <img src="{{ koordinator.foto.url }}" alt="{{ koordinator.nama }}" class="coord-foto">
+        {% else %}
+          <div class="coord-avatar">👩‍💼</div>
+        {% endif %}
+        <div class="coord-name">{{ koordinator.nama }}</div>
+        <div class="coord-role">Koordinator Program Studi Sains Data</div>
+        <div class="coord-divider"></div>
+        <div class="coord-quote">"Kami berkomitmen menghasilkan lulusan yang kompeten di bidang analitik data, machine learning, dan kecerdasan buatan untuk menjawab tantangan industri masa depan."</div>
+      </div>
+      {% endif %}
+      {% endwith %}
+    </div>
+  </div>
+</section>
+
+<!-- VISI MISI -->
+{% if profil %}
+<section class="visimisi-section">
+  <div class="inner">
+    <div class="visimisi-grid">
+      <div class="vm-box">
+        <div class="vm-label">Visi</div>
+        <h3 class="vm-title">Visi Program Studi</h3>
+        <p class="vm-text">{{ profil.visi }}</p>
+      </div>
+      <div class="vm-box">
+        <div class="vm-label">Misi</div>
+        <h3 class="vm-title">Misi Program Studi</h3>
+        <ul class="misi-list">
+          {% for m in profil.get_misi_list %}
+          <li>
+            <span class="misi-num">{{ forloop.counter }}</span>
+            <span>{{ m }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- DOSEN -->
+{% if dosen_list %}
+<section class="dosen-section">
+  <div class="inner">
+    <div class="section-badge">Tenaga Pendidik</div>
+    <div class="divider"></div>
+    <div class="berita-header">
+      <div>
+        <h2 class="section-title">Dosen Program Studi</h2>
+        <p class="section-sub">Didukung oleh dosen-dosen berkualifikasi S2 dan S3</p>
+      </div>
+      <a href="{% url 'website:dosen' %}" class="more-btn">Lihat Semua →</a>
+    </div>
+    <div class="dosen-grid">
+      {% for d in dosen_list %}
+      <div class="dosen-card">
+        {% if d.foto %}
+          <img src="{{ d.foto.url }}" alt="{{ d.nama }}" class="dosen-foto">
+        {% else %}
+          <div class="dosen-avatar">👨‍🏫</div>
+        {% endif %}
+        <div class="dosen-body">
+          <div class="dosen-name">{{ d.nama }}</div>
+          <div class="dosen-bidang">{{ d.bidang_keahlian }}</div>
+          <span class="dosen-badge">{{ d.get_pendidikan_terakhir_display }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- BERITA TERBARU -->
+<section class="berita-section">
+  <div class="inner">
+    <div class="berita-header">
+      <div>
+        <div class="section-badge">Informasi Terbaru</div>
+        <div class="divider"></div>
+        <h2 class="section-title">Update Informasi &amp; Kegiatan</h2>
+        <p class="section-sub" style="margin-bottom:0">Program Studi Sains Data FMIPA UNTAD</p>
+      </div>
+      <a href="{% url 'website:berita_list' %}" class="more-btn">Lihat Semua →</a>
+    </div>
+    <div class="berita-grid">
+      {% for b in berita_terbaru %}
+      <a href="{% url 'website:berita_detail' b.slug %}" class="news-card">
+        <div class="news-img">
+          {% if b.gambar %}
+            <img src="{{ b.gambar.url }}" alt="{{ b.judul }}">
+          {% else %}
+            <div class="news-img-placeholder">📰</div>
+          {% endif %}
+        </div>
+        <div class="news-body">
+          <span class="news-cat">{{ b.get_kategori_display }}</span>
+          <div class="news-title">{{ b.judul }}</div>
+          <div class="news-date">📅 {{ b.tanggal_dibuat|date:"d F Y" }}</div>
+        </div>
+      </a>
+      {% empty %}
+      <p class="empty-state">Belum ada berita yang diterbitkan.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- GALERI -->
+{% if galeri_terbaru %}
+<section class="galeri-section">
+  <div class="inner">
+    <div class="berita-header">
+      <div>
+        <div class="section-badge">Dokumentasi</div>
+        <div class="divider"></div>
+        <h2 class="section-title">Galeri Kegiatan</h2>
+      </div>
+      <a href="{% url 'website:galeri' %}" class="more-btn">Lihat Semua →</a>
+    </div>
+    <div class="galeri-grid">
+      {% for g in galeri_terbaru %}
+      <div class="galeri-item">
+        <img src="{{ g.foto.url }}" alt="{{ g.judul }}">
+        <div class="galeri-overlay">{{ g.judul }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'website/base.html' %}
+{% block title %}Sejarah{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="inner">
+    <div class="breadcrumb"><a href="{% url 'website:index' %}">Beranda</a> › Sejarah</div>
+    <h1 class="page-title">Sejarah Program Studi</h1>
+  </div>
+</div>
+<section style="padding:64px 0;">
+  <div class="inner" style="max-width:800px;">
+    <div class="section-badge">Profil Prodi</div>
+    <div class="divider"></div>
+    <h2 class="section-title">Sejarah Singkat</h2>
+    <div class="detail-body" style="margin-top:24px;">
+      {% if profil %}
+        {{ profil.sejarah|linebreaks }}
+      {% else %}
+        <p>Konten sejarah belum tersedia. Silakan tambahkan melalui halaman Admin.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

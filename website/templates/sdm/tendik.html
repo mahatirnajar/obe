@@ -1,0 +1,29 @@
+{% extends 'website/base.html' %}
+{% block title %}Tenaga Kependidikan{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="inner">
+    <div class="breadcrumb"><a href="{% url 'website:index' %}">Beranda</a> › Tenaga Kependidikan</div>
+    <h1 class="page-title">Tenaga Kependidikan</h1>
+  </div>
+</div>
+<section style="padding:56px 0;">
+  <div class="inner">
+    <div class="dosen-grid">
+      {% for t in tendik_list %}
+      <div class="dosen-card">
+        {% if t.foto %}<img src="{{ t.foto.url }}" alt="{{ t.nama }}" class="dosen-foto">
+        {% else %}<div class="dosen-avatar">👤</div>{% endif %}
+        <div class="dosen-body">
+          <div class="dosen-name">{{ t.nama }}</div>
+          <div class="dosen-bidang">{{ t.jabatan }}</div>
+          {% if t.email %}<a href="mailto:{{ t.email }}" class="dosen-email">✉ {{ t.email }}</a>{% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <p class="empty-state">Belum ada data tenaga kependidikan.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block title %}Kontak{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="inner">
+    <div class="breadcrumb"><a href="{% url 'website:index' %}">Beranda</a> › Kontak</div>
+    <h1 class="page-title">Hubungi Kami</h1>
+  </div>
+</div>
+
+<section style="padding: 56px 0;">
+  <div class="inner">
+    <div class="kontak-grid">
+
+      <!-- Info kontak -->
+      <div class="kontak-info">
+        <div class="section-badge">Informasi Kontak</div>
+        <div class="divider"></div>
+        <h2 class="section-title" style="font-size:1.4rem;">Program Studi Sains Data</h2>
+        <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:28px;">FMIPA Universitas Tadulako</p>
+
+        <div class="kontak-item">
+          <div class="kontak-icon">📍</div>
+          <div>
+            <strong>Alamat</strong>
+            <p>{% if profil %}{{ profil.alamat|linebreaks }}{% else %}Jl. Soekarno Hatta KM. 9, Tondo, Palu, Sulawesi Tengah 94148{% endif %}</p>
+          </div>
+        </div>
+        <div class="kontak-item">
+          <div class="kontak-icon">📞</div>
+          <div>
+            <strong>Telepon</strong>
+            <p>{% if profil %}{{ profil.telepon }}{% else %}0451 - 422611{% endif %}</p>
+          </div>
+        </div>
+        <div class="kontak-item">
+          <div class="kontak-icon">✉</div>
+          <div>
+            <strong>Email</strong>
+            <p>{% if profil %}{{ profil.email_prodi }}{% else %}sainsdatal@untad.ac.id{% endif %}</p>
+          </div>
+        </div>
+        <div class="kontak-item">
+          <div class="kontak-icon">🕐</div>
+          <div>
+            <strong>Jam Pelayanan</strong>
+            <p>Senin – Jumat, 08.00 – 16.00 WITA</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form kontak -->
+      <div class="kontak-form-wrap">
+        <div class="section-badge">Kirim Pesan</div>
+        <div class="divider"></div>
+        <h2 class="section-title" style="font-size:1.4rem;">Formulir Kontak</h2>
+
+        <form method="post" class="kontak-form">
+          {% csrf_token %}
+          {% for field in form %}
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+              <div class="field-error">{{ field.errors.0 }}</div>
+            {% endif %}
+          </div>
+          {% endfor %}
+          <button type="submit" class="btn-primary" style="width:100%;margin-top:8px;">
+            Kirim Pesan
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

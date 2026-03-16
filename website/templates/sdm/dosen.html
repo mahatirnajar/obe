@@ -1,0 +1,45 @@
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block title %}Dosen{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="inner">
+    <div class="breadcrumb"><a href="{% url 'website:index' %}">Beranda</a> › Dosen</div>
+    <h1 class="page-title">Tenaga Pendidik</h1>
+    <p class="page-sub">Dosen Program Studi Sains Data FMIPA UNTAD</p>
+  </div>
+</div>
+
+<section style="padding: 56px 0;">
+  <div class="inner">
+    {% regroup dosen_list by get_jabatan_display as jabatan_groups %}
+    {% for group in jabatan_groups %}
+    <div class="section-badge" style="margin-bottom:12px;">{{ group.grouper }}</div>
+    <div class="dosen-grid" style="margin-bottom:40px;">
+      {% for d in group.list %}
+      <div class="dosen-card">
+        {% if d.foto %}
+          <img src="{{ d.foto.url }}" alt="{{ d.nama }}" class="dosen-foto">
+        {% else %}
+          <div class="dosen-avatar">👨‍🏫</div>
+        {% endif %}
+        <div class="dosen-body">
+          <div class="dosen-name">{{ d.nama }}</div>
+          <div class="dosen-bidang">{{ d.bidang_keahlian }}</div>
+          <span class="dosen-badge">{{ d.get_pendidikan_terakhir_display }}</span>
+          {% if d.email %}
+            <a href="mailto:{{ d.email }}" class="dosen-email">✉ {{ d.email }}</a>
+          {% endif %}
+          {% if d.google_scholar %}
+            <a href="{{ d.google_scholar }}" target="_blank" class="dosen-scholar">Google Scholar →</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
